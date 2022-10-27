@@ -1,4 +1,5 @@
 use clap::{Parser, ValueEnum};
+use lzjd::{LZDict, Murmur3HashState};
 use std::collections::HashMap;
 use std::io::Read;
 use std::io::Write;
@@ -14,22 +15,22 @@ enum Mode {
     /// Expecting a directory structure like: ./assignment/studentID/
     AllAssignments,
 }
-/*
+
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
 enum Algorithm {
     /// Use SSDeep for text documents, including source code
     SSDEEP,
     /// Use LZJD for binary documents, such as PDF and popular Office document formats
     LZJD,
-}*/
+}
 
 #[derive(Parser, Debug, Clone)]
 #[command(author, version, about, long_about = None)]
 struct Args {
     #[arg(value_enum)]
     mode: Mode,
-    /*#[arg(value_enum)]
-    algo: Algorithm,*/
+    #[arg(value_enum)]
+    algo: Algorithm,
     /// The directory to check
     dir: String,
     /// File extensions to check, others will be ignored
@@ -39,21 +40,21 @@ struct Args {
 fn main() {
     let args = Args::parse();
     if args.mode == Mode::OneAssignment {
-        walk_one_assignment(&args.dir, &args.exts);
+        walk_one_assignment(&args.dir, args.algo, &args.exts);
     } else {
         let paths = std::fs::read_dir(&args.dir).unwrap();
         for path in paths.flatten() {
             if path.file_type().unwrap().is_dir() {
                 let dir = path.path();
                 let dir = dir.to_str().unwrap();
-                walk_one_assignment(&dir.to_string(), &args.exts);
+                walk_one_assignment(&dir.to_string(), args.algo, &args.exts);
                 println!();
             }
         }
     }
 }
 
-fn walk_one_assignment(dir: &String, exts: &Option<Vec<String>>) {
+fn walk_one_assignment(dir: &String, algo: Algorithm, exts: &Option<Vec<String>>) {
     let mut data: HashMap<String, Vec<u8>> = HashMap::new();
 
     for entry in WalkDir::new(&dir) {
@@ -98,7 +99,13 @@ fn walk_one_assignment(dir: &String, exts: &Option<Vec<String>>) {
 
     let mut hashes: HashMap<String, String> = HashMap::new();
     for (dir, file_data) in data.iter() {
-        hashes.insert(dir.clone(), ssdeep::hash(file_data).unwrap());
+        if algo == Algorithm::LZJD {
+            let build_hasher = Murmur3HashState::new();
+            let h = LZDict::from_bytes_stream(file_data.iter().map(|x| *x), &build_hasher);
+            hashes.insert(dir.clone(), h.to_string());
+        } else {
+            hashes.insert(dir.clone(), ssdeep::hash(file_data).unwrap());
+        }
     }
 
     let mut similarities: HashMap<String, i8> = HashMap::new();
@@ -111,8 +118,18 @@ fn walk_one_assignment(dir: &String, exts: &Option<Vec<String>>) {
             if !similarities.contains_key(format!("{}|{}", dir_inner, dir_outer).as_str())
                 && !similarities.contains_key(format!("{}|{}", dir_outer, dir_inner).as_str())
             {
-                let similarity =
-                    ssdeep::compare(hash_inner.as_bytes(), hash_outer.as_bytes()).unwrap();
+                let similarity = match algo {
+                    Algorithm::LZJD => {
+                        let a = lzjd::LZDict::from_base64_string(hash_inner).unwrap();
+                        let b = lzjd::LZDict::from_base64_string(hash_outer).unwrap();
+                        let result = a.similarity(&b) * 100.0;
+                        result as i8
+                    }
+                    Algorithm::SSDEEP => {
+                        ssdeep::compare(hash_inner.as_bytes(), hash_outer.as_bytes()).unwrap()
+                    }
+                };
+
                 if similarity > 0 {
                     similarities.insert(format!("{}|{}", dir_inner, dir_outer), similarity);
                 }
