@@ -97,6 +97,11 @@ fn walk_one_assignment(dir: &String, algo: Algorithm, exts: &Option<Vec<String>>
         }
     }
 
+    if data.is_empty() {
+        eprintln!("No files found.");
+        return;
+    }
+
     let mut hashes: HashMap<String, String> = HashMap::new();
     for (dir, file_data) in data.iter() {
         if algo == Algorithm::LZJD {
@@ -138,7 +143,11 @@ fn walk_one_assignment(dir: &String, algo: Algorithm, exts: &Option<Vec<String>>
         }
     }
 
-    if similarites_stats.empty() {
+    if similarites_stats.empty() || similarites_stats.avg() == 0.00{
+        eprintln!("Nothing is similar.");
+        if exts.is_none() {
+            eprintln!("Maybe try limiting by file extension? Run with `--help` for more information.");
+        }
         return;
     }
 
