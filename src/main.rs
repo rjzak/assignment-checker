@@ -19,9 +19,9 @@ enum Mode {
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
 enum Algorithm {
     /// Use SSDeep for text documents, including source code
-    SSDEEP,
+    Ssdeep,
     /// Use LZJD for binary documents, such as PDF and popular Office document formats
-    LZJD,
+    Lzjd,
 }
 
 #[derive(Parser, Debug, Clone)]
@@ -57,7 +57,7 @@ fn main() {
 fn walk_one_assignment(dir: &String, algo: Algorithm, exts: &Option<Vec<String>>) {
     let mut data: HashMap<String, Vec<u8>> = HashMap::new();
 
-    for entry in WalkDir::new(&dir) {
+    for entry in WalkDir::new(dir) {
         match entry {
             Ok(e) => {
                 if e.file_type().is_file() {
@@ -75,7 +75,7 @@ fn walk_one_assignment(dir: &String, algo: Algorithm, exts: &Option<Vec<String>>
                         let mut f = std::fs::File::open(e.path()).unwrap();
                         let mut temp = Vec::new();
                         f.read_to_end(&mut temp).unwrap();
-                        if temp.len() == 0 {
+                        if temp.is_empty() {
                             eprintln!("Skipping empty file {:?}", e.path());
                             continue;
                         }
@@ -104,9 +104,9 @@ fn walk_one_assignment(dir: &String, algo: Algorithm, exts: &Option<Vec<String>>
 
     let mut hashes: HashMap<String, String> = HashMap::new();
     for (dir, file_data) in data.iter() {
-        if algo == Algorithm::LZJD {
+        if algo == Algorithm::Lzjd {
             let build_hasher = Murmur3HashState::new();
-            let h = LZDict::from_bytes_stream(file_data.iter().map(|x| *x), &build_hasher);
+            let h = LZDict::from_bytes_stream(file_data.iter().copied(), &build_hasher);
             hashes.insert(dir.clone(), h.to_string());
         } else {
             hashes.insert(dir.clone(), ssdeep::hash(file_data).unwrap());
@@ -124,13 +124,13 @@ fn walk_one_assignment(dir: &String, algo: Algorithm, exts: &Option<Vec<String>>
                 && !similarities.contains_key(format!("{}|{}", dir_outer, dir_inner).as_str())
             {
                 let similarity = match algo {
-                    Algorithm::LZJD => {
+                    Algorithm::Lzjd => {
                         let a = lzjd::LZDict::from_base64_string(hash_inner).unwrap();
                         let b = lzjd::LZDict::from_base64_string(hash_outer).unwrap();
                         let result = a.similarity(&b) * 100.0;
                         result as i8
                     }
-                    Algorithm::SSDEEP => {
+                    Algorithm::Ssdeep => {
                         ssdeep::compare(hash_inner.as_bytes(), hash_outer.as_bytes()).unwrap()
                     }
                 };
@@ -143,10 +143,12 @@ fn walk_one_assignment(dir: &String, algo: Algorithm, exts: &Option<Vec<String>>
         }
     }
 
-    if similarites_stats.empty() || similarites_stats.avg() == 0.00{
+    if similarites_stats.empty() || similarites_stats.avg() == 0.00 {
         eprintln!("Nothing is similar.");
         if exts.is_none() {
-            eprintln!("Maybe try limiting by file extension? Run with `--help` for more information.");
+            eprintln!(
+                "Maybe try limiting by file extension? Run with `--help` for more information."
+            );
         }
         return;
     }
@@ -166,7 +168,7 @@ fn walk_one_assignment(dir: &String, algo: Algorithm, exts: &Option<Vec<String>>
     );
 
     for (dirs, similarity) in similarities.iter() {
-        let mut dir_parts = dirs.split("|");
+        let mut dir_parts = dirs.split('|');
         let first = dir_parts.next().unwrap();
         let second = dir_parts.next().unwrap();
         if *similarity >= 95i8 {
