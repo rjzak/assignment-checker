@@ -5,7 +5,7 @@ edition = "2021"
 license = "Apache-2.0"
 
 [dependencies]
-clap = { version = "4.2", features = ["derive"] }
+clap = { version = "4.3", features = ["derive"] }
 lzjd = { git = "https://github.com/malwaredb/lzjd-rs.git", branch = "remove_fasthash" }
 ssdeep = "0.2"
 termcolor = "1.1"
