@@ -353,7 +353,7 @@ checksum = "09fc20d2ca12cb9f044c93e3bd6d32d523e6e2ec3db4f7b2939cd99026ecd3f0"
 [[package]]
 name = "lzjd"
 version = "0.2.0"
-source = "git+https://github.com/malwaredb/lzjd-rs.git?branch=remove_fasthash#eaf5101203bc0d0278ae52c5a239920956c3b2de"
+source = "git+https://github.com/malwaredb/lzjd-rs.git?branch=remove_fasthash#06f1802e22944164ff46fac6a4b83683884d377e"
 dependencies = [
  "base64",
  "bincode",
