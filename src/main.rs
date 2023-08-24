@@ -1,5 +1,5 @@
 use clap::{Parser, ValueEnum};
-use lzjd::{LZDict, Murmur3HashState};
+use malwaredb_lzjd::{LZDict, Murmur3HashState};
 use std::collections::HashMap;
 use std::io::Read;
 use std::io::Write;
@@ -105,7 +105,7 @@ fn walk_one_assignment(dir: &String, algo: Algorithm, exts: &Option<Vec<String>>
     let mut hashes: HashMap<String, String> = HashMap::new();
     for (dir, file_data) in data.iter() {
         if algo == Algorithm::Lzjd {
-            let build_hasher = Murmur3HashState::new();
+            let build_hasher = Murmur3HashState::default();
             let h = LZDict::from_bytes_stream(file_data.iter().copied(), &build_hasher);
             hashes.insert(dir.clone(), h.to_string());
         } else {
@@ -125,8 +125,8 @@ fn walk_one_assignment(dir: &String, algo: Algorithm, exts: &Option<Vec<String>>
             {
                 let similarity = match algo {
                     Algorithm::Lzjd => {
-                        let a = lzjd::LZDict::from_base64_string(hash_inner).unwrap();
-                        let b = lzjd::LZDict::from_base64_string(hash_outer).unwrap();
+                        let a = LZDict::from_base64_string(hash_inner).unwrap();
+                        let b = LZDict::from_base64_string(hash_outer).unwrap();
                         let result = a.similarity(&b) * 100.0;
                         result as i8
                     }
