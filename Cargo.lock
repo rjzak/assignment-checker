@@ -83,6 +83,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "cc"
+version = "1.0.84"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0f8e7c90afad890484a21653d08b6e209ae34770fb5ee298f9c699fcc1e5c856"
+dependencies = [
+ "libc",
+]
+
+[[package]]
 name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -193,12 +202,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a26ae43d7bcc3b814de94796a5e736d4029efb0ee900c12e2d54c993ad1a1e07"
 
 [[package]]
-name = "gcc"
-version = "0.3.55"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8f5f3913fa0bfe7ee1fd8248b6b9f42a5af4b9d65ec2dd2c3c26132b950ecfc2"
-
-[[package]]
 name = "heck"
 version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -218,11 +221,11 @@ checksum = "b4668fb0ea861c1df094127ac5f1da3409a82116a4ba74fca2e58ef927159bb3"
 
 [[package]]
 name = "libfuzzy-sys"
-version = "0.2.0"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "890d6c10ebc975e2220fca19bf8fbeacd1f129215d71311b36346e2f3d1c6090"
+checksum = "a4af56081c1d274c1f801e1cfeebe1346471684cef83dad82a94ca4306cdabce"
 dependencies = [
- "gcc",
+ "cc",
  "libc",
 ]
 
@@ -344,9 +347,9 @@ dependencies = [
 
 [[package]]
 name = "ssdeep"
-version = "0.2.0"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b9f3112d52da11bd54d96f65f4e1c4e5872bbd5eff2338dd98e525046cb5999"
+checksum = "972c8911607f873143b555436e4fd1d1477eba84ae5d40f8fdef42e87d8c63c0"
 dependencies = [
  "libc",
  "libfuzzy-sys",
