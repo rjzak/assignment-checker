@@ -113,7 +113,7 @@ fn walk_one_assignment(dir: &String, algo: Algorithm, exts: &Option<Vec<String>>
         }
     }
 
-    let mut similarities: HashMap<String, i8> = HashMap::new();
+    let mut similarities: HashMap<String, u8> = HashMap::new();
     let mut similarites_stats = stats::Similarities::new();
     for (dir_outer, hash_outer) in hashes.iter() {
         for (dir_inner, hash_inner) in hashes.iter() {
@@ -128,11 +128,9 @@ fn walk_one_assignment(dir: &String, algo: Algorithm, exts: &Option<Vec<String>>
                         let a = LZDict::from_base64_string(hash_inner).unwrap();
                         let b = LZDict::from_base64_string(hash_outer).unwrap();
                         let result = a.similarity(&b) * 100.0;
-                        result as i8
+                        result as u8
                     }
-                    Algorithm::Ssdeep => {
-                        ssdeep::compare(hash_inner.as_bytes(), hash_outer.as_bytes()).unwrap()
-                    }
+                    Algorithm::Ssdeep => ssdeep::compare(hash_inner, hash_outer).unwrap(),
                 };
 
                 if similarity > 0 {
@@ -171,7 +169,7 @@ fn walk_one_assignment(dir: &String, algo: Algorithm, exts: &Option<Vec<String>>
         let mut dir_parts = dirs.split('|');
         let first = dir_parts.next().unwrap();
         let second = dir_parts.next().unwrap();
-        if *similarity >= 95i8 {
+        if *similarity >= 95u8 {
             let mut stdout = StandardStream::stdout(ColorChoice::Always);
             stdout
                 .set_color(ColorSpec::new().set_fg(Some(Color::Red)))

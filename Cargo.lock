@@ -221,9 +221,9 @@ checksum = "b4668fb0ea861c1df094127ac5f1da3409a82116a4ba74fca2e58ef927159bb3"
 
 [[package]]
 name = "libfuzzy-sys"
-version = "0.4.0"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a4af56081c1d274c1f801e1cfeebe1346471684cef83dad82a94ca4306cdabce"
+checksum = "4774eb3c15b9506dbf7571a4c65cee61a80561d44baef4bf1a8700496982834c"
 dependencies = [
  "cc",
  "libc",
@@ -347,9 +347,9 @@ dependencies = [
 
 [[package]]
 name = "ssdeep"
-version = "0.4.0"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "972c8911607f873143b555436e4fd1d1477eba84ae5d40f8fdef42e87d8c63c0"
+checksum = "bc1029d357aab683016d86af6ba42fb0772ab3ac191c8f6eef5315d4e0988752"
 dependencies = [
  "libc",
  "libfuzzy-sys",

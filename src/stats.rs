@@ -1,6 +1,6 @@
 #[derive(Clone, Debug)]
 pub struct Similarities {
-    nums: Vec<i8>,
+    nums: Vec<u8>,
 }
 
 impl Similarities {
@@ -8,7 +8,7 @@ impl Similarities {
         Similarities { nums: Vec::new() }
     }
 
-    pub fn add(&mut self, num: i8) {
+    pub fn add(&mut self, num: u8) {
         self.nums.push(num);
     }
 
@@ -21,11 +21,11 @@ impl Similarities {
     }
 
     pub fn len_non_zeroes(&self) -> usize {
-        self.nums.iter().filter(|x| **x > 0i8).count()
+        self.nums.iter().filter(|x| **x > 0u8).count()
     }
 
     pub fn num_zeroes(&self) -> usize {
-        self.nums.iter().filter(|x| **x == 0i8).count()
+        self.nums.iter().filter(|x| **x == 0u8).count()
     }
 
     pub fn avg(&self) -> f32 {
@@ -37,7 +37,7 @@ impl Similarities {
         let sum: u32 = self
             .nums
             .iter()
-            .filter(|x| **x > 0i8)
+            .filter(|x| **x > 0u8)
             .map(|x| *x as u32)
             .sum();
         sum as f32 / self.len_non_zeroes() as f32
@@ -62,7 +62,7 @@ impl Similarities {
         let variance: f32 = self
             .nums
             .iter()
-            .filter(|x| **x > 0i8)
+            .filter(|x| **x > 0u8)
             .map(|x| {
                 let s = *x as f32 - avg;
                 s.powf(2.0)
