@@ -7,7 +7,7 @@ license = "Apache-2.0"
 [dependencies]
 clap = { version = "4.4", features = ["derive"] }
 malwaredb-lzjd = "0.1.2"
-ssdeep = "0.4"
+ssdeep = "0.6"
 termcolor = "1.4"
 walkdir = "2.4"
 
