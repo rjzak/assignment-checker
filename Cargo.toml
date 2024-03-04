@@ -9,7 +9,7 @@ clap = { version = "4.5", features = ["derive"] }
 malwaredb-lzjd = "^0.1"
 ssdeep = "0.6"
 termcolor = "1.4"
-walkdir = "2.4"
+walkdir = "2.5"
 
 [profile.release]
 incremental = false
